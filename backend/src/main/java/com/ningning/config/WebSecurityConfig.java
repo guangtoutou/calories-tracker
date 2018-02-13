@@ -15,22 +15,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http
 				.authorizeRequests()
-				.antMatchers("/").permitAll()
-				.anyRequest().authenticated()
-				.and()
-				.formLogin()
-				.loginPage("/login")
+//				.antMatchers("/","/h2-console").permitAll()
+				.anyRequest()//.authenticated()
+//				.and()
+//				.formLogin()
+//				.loginPage("/login")
+//				.permitAll()
+//				.and()
+//				.logout()
 				.permitAll()
 				.and()
-				.logout()
-				.permitAll();
+				.csrf().disable().headers().frameOptions().disable();
 	}
 
-	@Autowired
-	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-		auth
-				.inMemoryAuthentication()
-				.withUser("user").password("password").roles("USER");
-	}
 
 }
