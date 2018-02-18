@@ -23,12 +23,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers("/","/register").permitAll()
 				.anyRequest().authenticated()
 				.and()
-				.formLogin()
-				.loginPage("/login")
-				.permitAll()
-				.and()
-				.logout()
-				.logoutSuccessUrl("/");
+//				.formLogin()
+//				.loginPage("/login")
+//				.permitAll()
+//				.and()
+//				.logout()
+//				.logoutSuccessUrl("/");
+				.httpBasic();
 
 		http.csrf().disable();
 		http.headers().frameOptions().disable();
