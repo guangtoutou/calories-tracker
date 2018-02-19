@@ -1,6 +1,8 @@
 package com.ningning.springoauth;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso;
@@ -9,8 +11,11 @@ import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoT
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticationProcessingFilter;
@@ -30,13 +35,21 @@ import java.util.List;
 @SpringBootApplication
 @EnableOAuth2Client
 @RestController
-public class SpringOauthApplication extends WebSecurityConfigurerAdapter{
+public class SpringOauthApplication extends WebSecurityConfigurerAdapter implements CommandLineRunner {
 
+	@Qualifier("oauth2ClientContext")
 	@Autowired
 	OAuth2ClientContext oauth2ClientContext;
 
+	@Autowired
+	private UserDetailsService userDetailsService;
+
+	@Autowired
+	private UserRepository userRepository;
+
 	@RequestMapping("/user")
 	public Principal user(Principal principal) {
+
 		return principal;
 	}
 
@@ -53,9 +66,23 @@ public class SpringOauthApplication extends WebSecurityConfigurerAdapter{
 				.permitAll()
 				.anyRequest()
 				.authenticated()
-				.and().logout().logoutSuccessUrl("/").permitAll()
-				.and().addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class);
+				.and()
+					.addFilter(new JWTAuthenticationFilter(authenticationManager()))
+					.addFilter(new JWTAuthorizationFilter(authenticationManager()))
+					.httpBasic()
+				.and()
+					.logout().logoutSuccessUrl("/").permitAll()
+				.and()
+					.addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class)
+					.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+		;
 		http.csrf().disable();
+	}
+
+	@Override
+	protected void configure(AuthenticationManagerBuilder auth)
+			throws Exception {
+		auth.userDetailsService(userDetailsService);
 	}
 
 	private Filter ssoFilter() {
@@ -113,6 +140,13 @@ public class SpringOauthApplication extends WebSecurityConfigurerAdapter{
 		registration.setFilter(filter);
 		registration.setOrder(-100);
 		return registration;
+	}
+
+	public void run(String... strings) throws Exception{
+		userRepository.save(new User("ni.ningning@gmail.com","123456"));
+		userRepository.save(new User("guangtoutou@hotmail.com","123456"));
+		userRepository.save(new User("8817625@qq.com","123456"));
+
 	}
 
 }
