@@ -13,6 +13,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.util.Arrays;
 import java.util.Date;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
@@ -37,8 +39,8 @@ public class MealsControllerTest {
 
 		mockMvc.perform(MockMvcRequestBuilders.get("/meals"))
 				.andExpect(status().isOk())
-				//.andExpect(model().size(1))
-				.andExpect(jsonPath("[0].calories").value("100"));
+				.andExpect(jsonPath("$", hasSize(1)))
+				.andExpect(jsonPath("$[0].calories",is(100)));
 	}
 
 

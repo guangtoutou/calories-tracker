@@ -13,7 +13,7 @@ import java.util.Collection;
 
 @Data
 @Entity
-public class User implements UserDetails{
+public class ApplicationUser implements UserDetails{
 
 	private @Id
 	@GeneratedValue
@@ -21,10 +21,10 @@ public class User implements UserDetails{
 	private String username;
 	private String password;
 
-	public User() {
+	public ApplicationUser() {
 	}
 
-	public User(String username, String password) {
+	public ApplicationUser(String username, String password) {
 		this.username = username;
 		this.password = password;
 	}
