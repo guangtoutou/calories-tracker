@@ -1,11 +1,18 @@
 import {Link} from 'react-router-dom';
-import axios from 'axios';
+import {connect} from 'react-redux';
+import {logout} from '../../actions/auth';
 
-const homepage = ()=>(
+const homepage = ({isAuthenticated, logout})=>(
 	<div>
 		<h1>Home Page</h1>
-		<Link to='/login'>Login</Link>
+		{isAuthenticated? <button onClick={()=>logout()}>Logout</button>: <Link to='/login'>Login</Link>}
 	</div>
 );
 
-export default homepage;
+function mapStateToProps(state){
+	return{
+		isAuthenticated:!!state.user.token
+	}
+}
+
+export default connect(mapStateToProps,{logout})(homepage);

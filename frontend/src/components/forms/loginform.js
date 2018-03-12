@@ -27,7 +27,7 @@ class LoginForm extends React.Component {
 		var password = this.state.password;
 		if (Object.keys(errors).length === 0) {
 			setTimeout(this.setState({ 'loading': true }), 3000);
-			this.props.submit({ email, password });
+			this.props.submit({ 'username':email, password });
 		}
 	}
 

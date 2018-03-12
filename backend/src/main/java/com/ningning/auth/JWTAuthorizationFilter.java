@@ -1,7 +1,6 @@
-package com.springauth.session.security;
+package com.ningning.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ningning.auth.ApplicationUser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -9,7 +8,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import javax.servlet.FilterChain;
@@ -58,7 +56,8 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 				.setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
 				.signWith(SignatureAlgorithm.HS512, SECRET.getBytes())
 				.compact();
-		response.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
+		response.setHeader(HEADER_STRING ,TOKEN_PREFIX + token);
+		response.setHeader(Access_Control_Expose_Headers,HEADER_STRING);
 	}
 
 	private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
