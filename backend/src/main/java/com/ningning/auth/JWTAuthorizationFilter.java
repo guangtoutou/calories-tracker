@@ -1,12 +1,8 @@
 package com.ningning.auth;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
@@ -16,17 +12,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 
 import static com.ningning.auth.SecurityConstants.*;
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
-	private AuthenticationManager authenticationManager;
-
 
 	public JWTAuthorizationFilter(AuthenticationManager authManager) {
 		super(authManager);
-		this.authenticationManager = authManager;
 	}
 
 	@Override
@@ -36,8 +28,6 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 		String header = req.getHeader(HEADER_STRING);
 
 		if (header == null || !header.startsWith(TOKEN_PREFIX)) {
-			authenticate(req,res);
-
 			chain.doFilter(req, res);
 			return;
 		}
@@ -46,18 +36,6 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		chain.doFilter(req, res);
-	}
-
-	@Override
-	protected void onSuccessfulAuthentication(HttpServletRequest request,
-											  HttpServletResponse response, Authentication authResult) throws IOException {
-		String token = Jwts.builder()
-				.setSubject(((ApplicationUser) authResult.getPrincipal()).getUsername())
-				.setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-				.signWith(SignatureAlgorithm.HS512, SECRET.getBytes())
-				.compact();
-		response.setHeader(HEADER_STRING ,TOKEN_PREFIX + token);
-		response.setHeader(Access_Control_Expose_Headers,HEADER_STRING);
 	}
 
 	private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
@@ -76,32 +54,5 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 			return null;
 		}
 		return null;
-	}
-
-	private void authenticate(HttpServletRequest request,
-							  HttpServletResponse response){
-		try {
-			ApplicationUser creds = new ObjectMapper()
-					.readValue(request.getInputStream(), ApplicationUser.class);
-
-
-			UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
-					creds.getUsername(), creds.getPassword());
-
-			Authentication authResult = this.authenticationManager
-					.authenticate(authRequest);
-
-
-			SecurityContextHolder.getContext().setAuthentication(authResult);
-
-			onSuccessfulAuthentication(request, response, authResult);
-		}
-		catch (AuthenticationException failed) {
-			SecurityContextHolder.clearContext();
-
-			return;
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
 	}
 }

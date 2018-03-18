@@ -5,12 +5,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
-@Controller
+@RestController
 public class AuthController {
 	@Autowired
 	private UserRepository userRepo;
@@ -21,9 +23,9 @@ public class AuthController {
 	}
 
 	@RequestMapping(value = "/register", method = POST)
-	public String register(ApplicationUser applicationUser){
+	public ResponseEntity<String> register(@RequestBody ApplicationUser applicationUser){
 		userRepo.save (applicationUser);
-		return "redirect:/login";
+		return new ResponseEntity<>("success", HttpStatus.OK);
 	}
 
 	@PostMapping("/auth")
