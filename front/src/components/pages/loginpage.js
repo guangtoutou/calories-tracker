@@ -1,24 +1,24 @@
 import React from 'react';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import LoginForm from '../forms/loginform';
-import {connect} from 'react-redux';
-import {login} from '../../actions/auth';
+import { connect } from 'react-redux';
+import { login } from '../../actions/auth';
 
 
-class LoginPage extends React.Component{
+class LoginPage extends React.Component {
 	submit = data =>
 		this.props.login(data).then(
 			() => this.props.history.push('/dashboard')
 		);
-		
-	render(){
-		return(
+
+	render() {
+		return (
 			<div>
 				<h1>Login Page</h1>
-				<LoginForm submit={this.submit}/>
+				<LoginForm submit={this.submit} />
 			</div>
 		);
 	}
 }
 
-export default connect(null,{login})(LoginPage);
+export default connect(null, { login })(LoginPage);

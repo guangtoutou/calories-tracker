@@ -3,11 +3,14 @@ package com.ningning.auth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Optional;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
@@ -23,14 +26,12 @@ public class AuthController {
 	}
 
 	@RequestMapping(value = "/register", method = POST)
-	public ResponseEntity<String> register(@RequestBody ApplicationUser applicationUser){
-		userRepo.save (applicationUser);
-		return new ResponseEntity<>("success", HttpStatus.OK);
-	}
+	public ResponseEntity<ApplicationUser> register(@RequestBody ApplicationUser applicationUser){
 
-	@PostMapping("/auth")
-	public ResponseEntity<String> auth(){
-		return new ResponseEntity<String>("success",HttpStatus.OK);
+		if (userRepo.findByUsername(applicationUser.getUsername())!=null)
+			throw new UsernameNotFoundException("user already exists");
+		ApplicationUser user = Optional.ofNullable(userRepo.save (applicationUser))
+				.orElseThrow(() -> new UsernameNotFoundException("user not found"));
+		return new ResponseEntity<>(user, HttpStatus.OK);
 	}
-
 }

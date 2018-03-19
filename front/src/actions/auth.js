@@ -25,11 +25,9 @@ export const logout = credentials => dispatch => {
 	dispatch(userLoggedOut());
 }
 
-export const signup = credentials => dispatch => {
-	api.user.signup(credentials).then(token=>{
+export const signup = data => dispatch => 
+	api.user.signup(data).then(token=>{
 		//localStorage.jwt = token;
-		var fakeToken = '12121';
-		dispatch(userSignup(fakeToken));
+		dispatch(userLoggedIn(token));
 	});
-}
 	
