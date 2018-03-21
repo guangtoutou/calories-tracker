@@ -9,9 +9,9 @@ export const userLoggedOut = () => ({
 	type: 'USER_LOGGED_OUT'
 });
 
-export const userSignup = token => ({
+export const userSignup = user => ({
 	type: 'USER_SIGNUP',
-	token
+	user
 });
 
 export const login = credentials => dispatch => 
@@ -26,8 +26,8 @@ export const logout = credentials => dispatch => {
 }
 
 export const signup = data => dispatch => 
-	api.user.signup(data).then(token=>{
-		//localStorage.jwt = token;
-		dispatch(userLoggedIn(token));
+	api.user.signup(data).then(user=>{
+		localStorage.jwt = user.token;
+		dispatch(userSignup(user));
 	});
 	

@@ -28,8 +28,12 @@ class SignupForm extends React.Component {
 		var email = this.state.email;
 		var password = this.state.password;
 		if (Object.keys(errors).length === 0) {
-			setTimeout(this.setState({ 'loading': true }), 3000);
-			this.props.submit({ 'username':email, password });
+			this.setState({ 'loading': true });
+			this.props
+				.submit({ 'username':email, password })
+				.catch(err => this.setState({
+					errors:{email:err.response.data.message, password:''},
+					loading:false}));
 		}
 	}
 

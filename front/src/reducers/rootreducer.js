@@ -10,7 +10,7 @@ const rootReducer = (state = initialState, action) => {
 		case 'USER_LOGGED_OUT':
 			return {user:{}};
 		case 'USER_SIGNUP':
-			return {user:{token:action.token}};
+			return {user:action.user};
 		default:
 			return state;
 	}

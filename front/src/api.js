@@ -7,6 +7,6 @@ export default {
 			.then(res => res.headers['authorization']),
 		signup: userform =>
 			axios.post('http://localhost:8080/register',userform)
-			.then(res => res.data)
+			.then(res => ({name:res.data.username, token:res.headers['authorization']}))
 	}
 };
